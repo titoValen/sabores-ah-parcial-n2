@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import IconChefs from "../assets/chef.svg";
+import "../style/header.css";
 
 const sections = [
   { id: "entradas", name: "Entradas" },
