@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sabores | Nuevo plato</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Sabores</a>
+      <nav class="section-nav" aria-label="Secciones del menú">
+        <% sections.forEach((section) => { %>
+          <a href="/sections/<%= section.id %>"><%= section.name %></a>
+        <% }) %>
+        <a class="nav-chefs" href="/chefs">
+          <img src="/chef.svg" alt="" class="chef-icon" width="18" height="18" />
+        </a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section class="intro compact-intro">
+        <a class="back-link" href="/">&larr; Volver al menú</a>
+        <p class="eyebrow">Cocina</p>
+        <h1>Agregar un plato</h1>
+        <p>Completá los datos para sumarlo a la carta.</p>
+      </section>
+
+      <% if (!chefs.length) { %>
+        <p class="empty-state">
+          No hay chefs cargados. Primero necesitás al menos un chef para asociarlo al plato.
+        </p>
+      <% } else { %>
+        <form class="dish-form" id="new-dish-form" novalidate>
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Nombre</span>
+              <input type="text" name="name" required maxlength="120" placeholder="Ej. Ravioles de ricota" />
+            </label>
+
+            <label class="form-field">
+              <span>Precio</span>
+              <input type="number" name="price" required min="0" step="1" placeholder="8500" />
+            </label>
+
+            <label class="form-field form-field-full">
+              <span>Descripción</span>
+              <textarea name="description" required rows="4" maxlength="500" placeholder="Breve descripción del plato"></textarea>
+            </label>
+
+            <label class="form-field form-field-full">
+              <span>URL de imagen</span>
+              <input type="url" name="image" required placeholder="https://..." />
+            </label>
+
+            <label class="form-field">
+              <span>Sección</span>
+              <select name="section" required>
+                <option value="" disabled selected>Elegí una sección</option>
+                <% sections.forEach((section) => { %>
+                  <option value="<%= section.id %>"><%= section.name %></option>
+                <% }) %>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span>Tipo de plato</span>
+              <input type="text" name="typeOfDish" required maxlength="80" placeholder="Ej. plato principal" />
+            </label>
+
+            <label class="form-field">
+              <span>Chef</span>
+              <select name="chefId" required>
+                <option value="" disabled selected>Elegí un chef</option>
+                <% chefs.forEach((chef) => { %>
+                  <option value="<%= chef._id %>"><%= chef.name %></option>
+                <% }) %>
+              </select>
+            </label>
+
+            <label class="form-field form-checkbox">
+              <input type="checkbox" name="vegetarian" value="true" />
+              <span>Opción vegetariana</span>
+            </label>
+          </div>
+
+          <p class="form-message" id="form-message" hidden></p>
+
+          <div class="form-actions">
+            <a class="button-secondary" href="/">Cancelar</a>
+            <button class="button-primary" type="submit">Guardar plato</button>
+          </div>
+        </form>
+      <% } %>
+    </main>
+
+    <% if (chefs.length) { %>
+      <script>
+        const form = document.getElementById("new-dish-form");
+        const message = document.getElementById("form-message");
+
+        function showMessage(text, isError = true) {
+          message.hidden = false;
+          message.textContent = text;
+          message.classList.toggle("is-error", isError);
+          message.classList.toggle("is-success", !isError);
+        }
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const submitButton = form.querySelector('button[type="submit"]');
+          const data = new FormData(form);
+
+          const payload = {
+            name: data.get("name").trim(),
+            description: data.get("description").trim(),
+            price: Number(data.get("price")),
+            image: data.get("image").trim(),
+            section: data.get("section"),
+            typeOfDish: data.get("typeOfDish").trim(),
+            vegetarian: data.get("vegetarian") === "true",
+            chefId: data.get("chefId"),
+          };
+
+          if (
+            !payload.name ||
+            !payload.description ||
+            !payload.image ||
+            !payload.section ||
+            !payload.typeOfDish ||
+            !payload.chefId ||
+            !Number.isFinite(payload.price)
+          ) {
+            showMessage("Completá todos los campos antes de guardar.");
+            return;
+          }
+
+          submitButton.disabled = true;
+          showMessage("Guardando plato...", false);
+
+          try {
+            const response = await fetch("/api/dishes", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+              throw new Error(result.message || "No se pudo crear el plato");
+            }
+
+            const dishId = typeof result === "string" ? result : result._id || result;
+            showMessage("Plato creado. Redirigiendo...", false);
+            window.location.href = `/dishes/${dishId}`;
+          } catch (error) {
+            showMessage(error.message);
+            submitButton.disabled = false;
+          }
+        });
+      </script>
+    <% } %>
+  </body>
+</html>

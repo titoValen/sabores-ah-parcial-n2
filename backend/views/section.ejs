@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sabores | <%= section.name %></title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Sabores</a>
+      <nav class="section-nav" aria-label="Secciones del menú">
+        <% sections.forEach((item) => { %>
+          <a class="<%= item.id === section.id ? 'active' : '' %>" href="/sections/<%= item.id %>"><%= item.name %></a>
+        <% }) %>
+        <a class="nav-chefs" href="/chefs">
+          <img src="/chef.svg" alt="" class="chef-icon" width="18" height="18" />
+        </a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section class="intro compact-intro">
+        <a class="back-link" href="/">&larr; Volver al menú</a>
+        <p class="eyebrow">Sección seleccionada</p>
+        <h1><%= section.name %></h1>
+        <p>Preparaciones elegidas de nuestra carta.</p>
+      </section>
+
+      <% if (dishes.length) { %>
+        <div class="dish-grid">
+          <% dishes.forEach((dish) => { %>
+            <article class="dish-card">
+              <img src="<%= dish.image %>" alt="<%= dish.name %>" loading="lazy" />
+              <div class="dish-card-content">
+                <p class="dish-section"><%= dish.typeOfDish %></p>
+                <h2><%= dish.name %></h2>
+                <p><%= dish.description %></p>
+                <div class="dish-footer">
+                  <strong>$<%= Number(dish.price).toLocaleString("es-AR") %></strong>
+                  <div class="dish-card-links">
+                    <a href="/dishes/<%= dish._id %>">Ver detalle</a>
+                    <a href="/dishes/<%= dish._id %>/edit">Editar</a>
+                  </div>
+                </div>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="empty-state">No hay platos cargados en esta sección.</p>
+      <% } %>
+    </main>
+  </body>
+</html>

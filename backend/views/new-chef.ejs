@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sabores | Nuevo chef</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Sabores</a>
+      <nav class="section-nav" aria-label="Secciones del menú">
+        <% sections.forEach((section) => { %>
+          <a href="/sections/<%= section.id %>"><%= section.name %></a>
+        <% }) %>
+        <a class="nav-chefs" href="/chefs">
+          <img src="/chef.svg" alt="" class="chef-icon" width="18" height="18" />
+        </a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section class="intro compact-intro">
+        <a class="back-link" href="/chefs">&larr; Volver a chefs</a>
+        <p class="eyebrow">Equipo</p>
+        <h1>Agregar un chef</h1>
+        <p>Completá los datos para sumarlo al equipo de cocina.</p>
+      </section>
+
+      <form class="dish-form" id="new-chef-form" novalidate>
+        <div class="form-grid">
+          <label class="form-field form-field-full">
+            <span>Nombre</span>
+            <input
+              type="text"
+              name="name"
+              required
+              maxlength="120"
+              placeholder="Ej. Martín Gómez"
+            />
+          </label>
+
+          <label class="form-field form-field-full">
+            <span>URL de foto</span>
+            <input
+              type="url"
+              name="photo"
+              required
+              placeholder="https://..."
+            />
+          </label>
+
+          <label class="form-field form-field-full">
+            <span>Descripción</span>
+            <textarea
+              name="description"
+              required
+              rows="4"
+              maxlength="500"
+              placeholder="Breve bio del chef"
+            ></textarea>
+          </label>
+        </div>
+
+        <p class="form-message" id="form-message" hidden></p>
+
+        <div class="form-actions">
+          <a class="button-secondary" href="/chefs">Cancelar</a>
+          <button class="button-primary button-with-icon" type="submit">
+            Guardar chef
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <script>
+      const form = document.getElementById("new-chef-form");
+      const message = document.getElementById("form-message");
+
+      function showMessage(text, isError = true) {
+        message.hidden = false;
+        message.textContent = text;
+        message.classList.toggle("is-error", isError);
+        message.classList.toggle("is-success", !isError);
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        const data = new FormData(form);
+
+        const payload = {
+          name: data.get("name").trim(),
+          photo: data.get("photo").trim(),
+          description: data.get("description").trim(),
+        };
+
+        if (!payload.name || !payload.photo || !payload.description) {
+          showMessage("Completá todos los campos antes de guardar.");
+          return;
+        }
+
+        submitButton.disabled = true;
+        showMessage("Guardando chef...", false);
+
+        try {
+          const response = await fetch("/api/chefs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const result = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(result.message || "No se pudo crear el chef");
+          }
+
+          showMessage("Chef creado. Redirigiendo...", false);
+          window.location.href = "/chefs";
+        } catch (error) {
+          showMessage(error.message);
+          submitButton.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

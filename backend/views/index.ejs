@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sabores | Menú</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Sabores</a>
+      <nav class="section-nav" aria-label="Secciones del menú">
+        <% sections.forEach((section) => { %>
+          <a href="/sections/<%= section.id %>"><%= section.name %></a>
+        <% }) %>
+        <a class="nav-chefs" href="/chefs">
+          <img src="/chef.svg" alt="" class="chef-icon" width="18" height="18" />
+        </a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section class="intro">
+        <p class="eyebrow">Restaurante Sabores</p>
+        <h1>Un menú para disfrutar sin apuro.</h1>
+        <p>Elegí una sección y descubrí nuestras preparaciones.</p>
+      </section>
+
+      <section class="section-grid" aria-label="Secciones del menú">
+        <% sections.forEach((section) => { %>
+          <a class="section-link" href="/sections/<%= section.id %>">
+            <span><%= section.name %></span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        <% }) %>
+      </section>
+
+      <section class="menu-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Nuestra carta</p>
+            <h2>Todos los platos</h2>
+          </div>
+          <div class="section-heading-actions">
+            <span class="result-count"><%= dishes.length %> platos</span>
+            <a class="button-primary" href="/dishes/new">Agregar plato</a>
+          </div>
+        </div>
+
+        <% if (dishes.length) { %>
+          <div class="dish-grid">
+            <% dishes.forEach((dish) => { %>
+              <article class="dish-card">
+                <img src="<%= dish.image %>" alt="<%= dish.name %>" loading="lazy" />
+                <div class="dish-card-content">
+                  <p class="dish-section"><%= dish.section %></p>
+                  <h3><%= dish.name %></h3>
+                  <p><%= dish.description %></p>
+                  <div class="dish-footer">
+                    <strong>$<%= Number(dish.price).toLocaleString("es-AR") %></strong>
+                    <div class="dish-card-links">
+                      <a href="/dishes/<%= dish._id %>">Ver detalle</a>
+                      <a href="/dishes/<%= dish._id %>/edit">Editar</a>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="empty-state">Todavía no hay platos cargados.</p>
+        <% } %>
+      </section>
+    </main>
+  </body>
+</html>

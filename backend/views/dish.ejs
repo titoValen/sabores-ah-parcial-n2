@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sabores | <%= dish.name %></title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">Sabores</a>
+      <nav class="section-nav" aria-label="Secciones del menú">
+        <% sections.forEach((section) => { %>
+          <a href="/sections/<%= section.id %>"><%= section.name %></a>
+        <% }) %>
+        <a class="nav-chefs" href="/chefs">
+          <img src="/chef.svg" alt="" class="chef-icon" width="18" height="18" />
+        </a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <a class="back-link" href="/">&larr; Volver al menú</a>
+      <article class="dish-detail">
+        <img src="<%= dish.image %>" alt="<%= dish.name %>" />
+        <div class="dish-detail-content">
+          <p class="eyebrow"><%= dish.section %> / <%= dish.typeOfDish %></p>
+          <h1><%= dish.name %></h1>
+          <p class="detail-description"><%= dish.description %></p>
+          <p class="detail-price">$<%= Number(dish.price).toLocaleString("es-AR") %></p>
+          <p class="vegetarian"><%= dish.vegetarian ? "Opción vegetariana" : "Preparación de la casa" %></p>
+          <p class="form-message" id="delete-message" hidden></p>
+          <div class="dish-actions">
+            <a class="button-primary" href="/dishes/<%= dish._id %>/edit">Editar plato</a>
+            <button class="button-danger" type="button" id="delete-dish-btn">Eliminar plato</button>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <script>
+      const deleteButton = document.getElementById("delete-dish-btn");
+      const message = document.getElementById("delete-message");
+      const dishId = "<%= dish._id %>";
+      const dishName = "<%= dish.name %>";
+
+      function showMessage(text, isError = true) {
+        message.hidden = false;
+        message.textContent = text;
+        message.classList.toggle("is-error", isError);
+        message.classList.toggle("is-success", !isError);
+      }
+
+      deleteButton.addEventListener("click", async () => {
+        const confirmed = window.confirm(
+          `¿Eliminar "${dishName}" de la carta? Esta acción no se puede deshacer.`
+        );
+
+        if (!confirmed) return;
+
+        deleteButton.disabled = true;
+        showMessage("Eliminando plato...", false);
+
+        try {
+          const response = await fetch(`/api/dishes/${dishId}`, {
+            method: "DELETE",
+          });
+          const result = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(result.message || "No se pudo eliminar el plato");
+          }
+
+          showMessage("Plato eliminado. Redirigiendo...", false);
+          window.location.href = "/";
+        } catch (error) {
+          showMessage(error.message);
+          deleteButton.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
