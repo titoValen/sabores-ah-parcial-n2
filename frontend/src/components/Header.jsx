@@ -12,7 +12,9 @@ const sections = [
 export default function Header() {
   return (
     <header className="site-header">
-      <Link className="brand" to="/">Sabores</Link>
+      <Link className="brand" to="/">
+        Sabores
+      </Link>
       <nav className="section-nav" aria-label="Secciones del menú">
         {sections.map((section) => (
           <Link key={section.id} to={`/sections/${section.id}`}>
@@ -20,7 +22,13 @@ export default function Header() {
           </Link>
         ))}
         <Link className="nav-chefs" to="/chefs">
-          <img className="chef-icon" src={IconChefs} alt="Ir a chefs" width="18" height="18" />
+          <img
+            className="chef-icon"
+            src={IconChefs}
+            alt="Ir a chefs"
+            width="18"
+            height="18"
+          />
         </Link>
       </nav>
     </header>
