@@ -1,10 +1,15 @@
-export async function getDishes() {
-  const response = await fetch("/api/dishes");
+export async function request(path, method = "GET", body) {
+  const response = await fetch(`/api${path}`, {
+    method,
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const result = await response.json().catch(() => null);
 
   if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    throw new Error(error?.message || "No se pudieron cargar los platos");
+    throw new Error(result?.message || "No se pudo completar la solicitud");
   }
 
-  return response.json();
+  return result;
 }
