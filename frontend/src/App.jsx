@@ -1,11 +1,14 @@
+import { Suspense } from "react";
 import Header from "./components/Header";
-import Home from "./pages/Home";
+import AppRoutes from "./routes/routes";
 
 export default function App() {
   return (
     <>
       <Header />
-      <Home />
+      <Suspense fallback={<p>Cargando...</p>}>
+        <AppRoutes />
+      </Suspense>
     </>
   );
 }
