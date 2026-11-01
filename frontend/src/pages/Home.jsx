@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getDishes } from "../services/api.services";
+import { getDishes } from "../services/dishes.services";
+import { sections } from "../constants/sections";
 import "../style/home.css";
-
-const sections = [
-  { id: "entradas", name: "Entradas" },
-  { id: "mains", name: "Platos principales" },
-  { id: "pastas", name: "Pastas" },
-  { id: "postres", name: "Postres" },
-  { id: "bebidas", name: "Bebidas" },
-];
 
 const priceFormatter = new Intl.NumberFormat("es-AR");
 
