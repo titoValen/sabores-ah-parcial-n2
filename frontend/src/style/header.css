@@ -29,6 +29,10 @@
   color: var(--accent-dark);
 }
 
+.section-nav a.active {
+  color: var(--accent-dark);
+}
+
 .nav-chefs {
   align-items: center;
   display: inline-flex;

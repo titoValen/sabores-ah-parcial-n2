@@ -1,16 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import IconChefs from "../assets/chef.svg";
+import { sections } from "../constants/sections";
 import "../style/header.css";
 
-const sections = [
-  { id: "entradas", name: "Entradas" },
-  { id: "mains", name: "Platos principales" },
-  { id: "pastas", name: "Pastas" },
-  { id: "postres", name: "Postres" },
-  { id: "bebidas", name: "Bebidas" },
-];
-
 export default function Header() {
+  const { pathname } = useLocation();
+
   return (
     <header className="site-header">
       <Link className="brand" to="/">
@@ -18,11 +13,18 @@ export default function Header() {
       </Link>
       <nav className="section-nav" aria-label="Secciones del menú">
         {sections.map((section) => (
-          <Link key={section.id} to={`/sections/${section.id}`}>
+          <Link
+            className={pathname === `/sections/${section.id}` ? "active" : ""}
+            key={section.id}
+            to={`/sections/${section.id}`}
+          >
             {section.name}
           </Link>
         ))}
-        <Link className="nav-chefs" to="/chefs">
+        <Link
+          className={`nav-chefs ${pathname.startsWith("/chefs") ? "active" : ""}`}
+          to="/chefs"
+        >
           <img
             className="chef-icon"
             src={IconChefs}
